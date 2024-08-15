@@ -1,0 +1,4 @@
+1. What is block
+2. Architecture of block
+3. Use of fields of a block
+4. why 1st 4 digits are 0 for hash
