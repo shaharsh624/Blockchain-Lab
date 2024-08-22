@@ -273,3 +273,5 @@ cython_debug/
 #.idea/
 
 */.vscode
+*/*.pem
+*/*.pub
