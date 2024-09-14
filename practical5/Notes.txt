@@ -1,0 +1,14 @@
+a. Implement Block Creation
+    - Identity
+    - Nonce
+    - Time Stamp
+    - Prev Hash
+    - Data
+    - Hash
+b. Perform PoW (SHA 256)
+
+
+Alice Sent Rs.100 to Bob
+Bob sent Rs.50 to John
+John recieved Rs.300 from Harry
+Harry sent Rs.410 to Alice
