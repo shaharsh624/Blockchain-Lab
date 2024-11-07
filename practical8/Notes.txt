@@ -1,4 +1,0 @@
-Learn about Smart Contracts and it's installation
-
-https://medium.com/@m_mcclarty/setting-up-solidity-on-windows-10-993a1d2c615c
-
