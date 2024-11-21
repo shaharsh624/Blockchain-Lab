@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.8.2 <0.9.0;
+
+contract Voting {
+    mapping(string => uint) public votes;
+    string[] public candidates;
+
+    function addCandidate(string memory _name) public {
+        if (votes[_name] == 0) {
+            votes[_name] = 0;
+            candidates.push(_name);
+        }
+    }
+
+    function vote(string memory _name) public {
+        votes[_name]++;
+    }
+
+    function countVotes(string memory _name) view public returns (uint) {
+        return votes[_name];
+    }
+
+    function getResults() view public returns (string memory, uint) {
+        string storage winner = candidates[0];
+        for (uint i=0 ; i<candidates.length ; i++) {
+            if (votes[candidates[i]] > votes[winner]) {
+                winner = candidates[i];
+            }
+        }
+        return (winner, votes[winner]);
+    }
+}

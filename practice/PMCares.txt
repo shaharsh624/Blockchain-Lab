@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.8.2 <0.9.0;
+
+contract PMCares {
+    address public owner;
+    uint256 public totalFund;
+
+    struct Donor {
+        string name;
+        uint256 amount;
+    }
+
+    mapping (address => Donor) public donations;
+
+    modifier onlyAdmin() {
+        require(msg.sender == owner, "Only admin can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function donate(string memory _name) public payable {
+        require(msg.value > 0, "Donation must be greater than 0");
+        if (donations[msg.sender].amount == 0) {
+            donations[msg.sender] = Donor(_name, msg.value);
+        } else {
+            donations[msg.sender].amount += msg.value;
+        }
+        totalFund += msg.value;
+    }
+
+    function getDonor(address donorAddress) public view returns (string memory, uint256){
+        Donor memory donor = donations[donorAddress];
+        return (donor.name, donor.amount);
+    }
+
+    function withdraw(uint256 amount, address payable recipient) public onlyAdmin {
+        require(amount <= address(this).balance, "Insufficient Amount");
+        totalFund -= amount;
+        recipient.transfer(amount);
+    }
+
+}
+

@@ -1,0 +1,76 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract HospitalManagement {
+    // State variables
+    address public admin; // Administrator address
+    uint256 public patientCount; // Number of registered patients
+
+    // Struct for storing patient details
+    struct Patient {
+        uint256 id;
+        string name;
+        uint256 age;
+        string ailment;
+        bool registered;
+        uint256 balance;
+    }
+
+    // Mapping for patient records
+    mapping(address => Patient) public patients;
+
+    // Modifier to restrict access to admin
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    // Constructor to set the admin
+    constructor() {
+        admin = msg.sender; // The deployer is the admin
+    }
+
+    // Function to register a new patient (Only admin)
+    function registerPatient(
+        address patientAddress,
+        string memory name,
+        uint256 age,
+        string memory ailment
+    ) public onlyAdmin {
+        require(!patients[patientAddress].registered, "Patient already registered");
+        patients[patientAddress] = Patient({
+            id: ++patientCount,
+            name: name,
+            age: age,
+            ailment: ailment,
+            registered: true,
+            balance: 0
+        });
+    }
+
+    // Function for patients to view their details
+    function getMyDetails() public view returns (uint256, string memory, uint256, string memory, uint256) {
+        Patient memory patient = patients[msg.sender];
+        require(patient.registered, "You are not registered");
+        return (patient.id, patient.name, patient.age, patient.ailment, patient.balance);
+    }
+
+    // Payable function to deposit funds for medical expenses
+    function payBill() public payable {
+        Patient storage patient = patients[msg.sender];
+        require(patient.registered, "You are not registered");
+        require(msg.value > 0, "Payment must be greater than zero");
+        patient.balance += msg.value;
+    }
+
+    // Function to withdraw funds by admin for hospital expenses
+    function withdrawFunds(uint256 amount, address payable recipient) public onlyAdmin {
+        require(amount <= address(this).balance, "Insufficient funds in the contract");
+        recipient.transfer(amount);
+    }
+
+    // Get contract balance (for admin only)
+    function getContractBalance() public view onlyAdmin returns (uint256) {
+        return address(this).balance;
+    }
+}

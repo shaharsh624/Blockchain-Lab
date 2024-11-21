@@ -1,0 +1,56 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Auction {
+    address public auctionOwner;
+    address public highestBidder;
+    uint256 public highestBid;
+    bool public auctionEnded;
+
+    // Define a struct for auction details
+    struct AuctionDetails {
+        address highestBidder;
+        uint256 highestBid;
+        bool auctionEnded;
+    }
+
+    // Create an instance of AuctionDetails
+    AuctionDetails public auction;
+
+    constructor() {
+        auctionOwner = msg.sender;
+    }
+
+    // Start a new auction
+    function startAuction() public {
+        require(msg.sender == auctionOwner, "Only the auction owner can start the auction");
+        auction.auctionEnded = false;
+        auction.highestBidder = address(0);
+        auction.highestBid = 0;
+    }
+
+    // Bid on the auction item
+    function bid() public payable {
+        require(!auction.auctionEnded, "Auction has ended");
+        require(msg.value > auction.highestBid, "Bid must be higher than current highest bid");
+
+        if (auction.highestBidder != address(0)) {
+            payable(auction.highestBidder).transfer(auction.highestBid); // Refund the previous highest bidder
+        }
+
+        auction.highestBidder = msg.sender;
+        auction.highestBid = msg.value;
+    }
+
+    // End the auction and transfer the highest bid to the auction owner
+    function endAuction() public {
+        require(msg.sender == auctionOwner, "Only the auction owner can end the auction");
+        auction.auctionEnded = true;
+        payable(auctionOwner).transfer(auction.highestBid);
+    }
+
+    // Get the current highest bid and bidder
+    function getAuctionDetails() public view returns (address, uint256, bool) {
+        return (auction.highestBidder, auction.highestBid, auction.auctionEnded);
+    }
+}
